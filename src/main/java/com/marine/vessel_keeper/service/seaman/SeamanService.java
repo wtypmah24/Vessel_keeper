@@ -5,9 +5,7 @@ import com.marine.vessel_keeper.dto.response.SeamanResponseDto;
 import com.marine.vessel_keeper.entity.seaman.Seaman;
 import com.marine.vessel_keeper.entity.vessel.Vessel;
 import com.marine.vessel_keeper.exception.WrongCandidateException;
-import com.marine.vessel_keeper.mapper.CertificateMapper;
 import com.marine.vessel_keeper.mapper.SeamanMapper;
-import com.marine.vessel_keeper.repository.CertificateRepository;
 import com.marine.vessel_keeper.repository.SeamanRepository;
 import com.marine.vessel_keeper.repository.VesselRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +21,16 @@ public class SeamanService {
     private final SeamanMapper seamanMapper;
     private final SeamanRepository seamanRepository;
     private final VesselRepository vesselRepository;
+    private final RecordOfServiceService recordService;
 
     @Autowired
     public SeamanService(SeamanMapper seamanMapper,
                          SeamanRepository seamanRepository,
-                         VesselRepository vesselRepository) {
+                         VesselRepository vesselRepository, RecordOfServiceService recordService) {
         this.seamanMapper = seamanMapper;
         this.seamanRepository = seamanRepository;
         this.vesselRepository = vesselRepository;
+        this.recordService = recordService;
     }
 
     @Transactional
@@ -40,14 +40,14 @@ public class SeamanService {
 
     @Transactional
     public void removeSeamanFromLaborPool(long seamanId) {
-        seamanRepository.delete(seamanRepository.findById(seamanId));
+        seamanRepository.delete(seamanRepository.findById(seamanId).orElseThrow());
     }
 
     //TODO: Refactor this method
     @Transactional
     public Set<SeamanResponseDto> hireSeaman(long seamanId, long vesselId) throws WrongCandidateException {
-        Seaman seaman = seamanRepository.findById(seamanId);
-        Vessel vessel = vesselRepository.findById(vesselId);
+        Seaman seaman = seamanRepository.findById(seamanId).orElseThrow();
+        Vessel vessel = vesselRepository.findByImoNumber(vesselId).orElseThrow();
 
         if (!hasCertificate(seaman)) throw new WrongCandidateException("Candidate has no certificates!");
         if (!isCertificateUpdate(seaman)) throw new WrongCandidateException("Candidate's certificates are not up to date!");
@@ -57,17 +57,19 @@ public class SeamanService {
     }
 
     @Transactional
-    public Set<SeamanResponseDto> signOffSeaman(long seamanId, long vesselId) {
-        Seaman seaman = seamanRepository.findById(seamanId);
-        Vessel vessel = vesselRepository.findById(vesselId);
+    public Set<SeamanResponseDto> signOffSeaman(long seamanId, long vesselId, String comment) {
+        Seaman seaman = seamanRepository.findById(seamanId).orElseThrow();
+        Vessel vessel = vesselRepository.findByImoNumber(vesselId).orElseThrow();
+
+        recordService.addRecordOfService(seaman, vessel, comment);
 
         vessel.signOffSeaman(seaman);
 
         return vessel.getCrew().stream().map(seamanMapper::seamanToSeamanResponseDto).collect(Collectors.toSet());
     }
     @Transactional
-    public Set<SeamanResponseDto> changeCrew(long signOnId, long signOffId, long vesselId) throws WrongCandidateException {
-        signOffSeaman(signOffId, vesselId);
+    public Set<SeamanResponseDto> changeCrew(long signOnId, long signOffId, long vesselId, String comment) throws WrongCandidateException {
+        signOffSeaman(signOffId, vesselId, comment);
         return hireSeaman(signOnId, vesselId);
     }
 

@@ -33,7 +33,8 @@ public class Seaman {
         return certificates;
     }
 
-    public void removeCertificate(Certificate certificate){
+    public Set<SeamanCertificate> removeCertificate(SeamanCertificate certificate){
         this.certificates.remove(certificate);
+        return certificates;
     }
 }

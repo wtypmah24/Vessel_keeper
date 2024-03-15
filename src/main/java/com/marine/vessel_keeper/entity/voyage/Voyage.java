@@ -1,5 +1,6 @@
 package com.marine.vessel_keeper.entity.voyage;
 
+import com.marine.vessel_keeper.entity.vessel.Vessel;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,4 +22,6 @@ public class Voyage {
     private LocalDate startDate;
     @Column(name = "end_date")
     private LocalDate endDate;
+    @OneToOne
+    private Vessel vessel;
 }

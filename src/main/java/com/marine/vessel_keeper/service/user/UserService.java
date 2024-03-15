@@ -2,6 +2,7 @@ package com.marine.vessel_keeper.service.user;
 
 import com.marine.vessel_keeper.dto.request.UserRequestDto;
 import com.marine.vessel_keeper.dto.response.UserResponseDto;
+import com.marine.vessel_keeper.exception.WrongCandidateException;
 import com.marine.vessel_keeper.mapper.UserMapper;
 import com.marine.vessel_keeper.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,8 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto createUser(UserRequestDto userCandidate) {
+    public UserResponseDto createUser(UserRequestDto userCandidate) throws WrongCandidateException {
+        if (userCandidate == null) throw new WrongCandidateException("You provided empty candidate!");
         return userMapper.userToUserResponseDto(userRepository.save(userMapper.userDtoToUser(userCandidate)));
     }
     @Transactional
