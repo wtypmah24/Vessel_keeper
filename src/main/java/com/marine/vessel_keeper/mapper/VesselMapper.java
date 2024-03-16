@@ -6,10 +6,11 @@ import com.marine.vessel_keeper.entity.vessel.Vessel;
 import org.mapstruct.Mapper;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface VesselMapper {
-    Vessel vesselDtoToVessel(VesselRequestDto vesselCandidate);
-    VesselRequestDto vesselToVesselDto(Vessel vessel);
-    List<VesselResponseDto> vesselsToVesselResponseDtos(List<Vessel> vessels);
+    Vessel vesselRequestDtoToVessel(VesselRequestDto vesselCandidate);
+    VesselResponseDto vesselToVesselResponseDto(Vessel vessel);
+    Set<VesselResponseDto> vesselsToVesselResponseDtos(List<Vessel> vessels);
 }

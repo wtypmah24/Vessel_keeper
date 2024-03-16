@@ -10,6 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface VoyageMapper {
     Voyage voyageRequestDtoToVoyage(VoyageRequestDto candidate);
+
     VoyageResponseDto voyageToVoyageResponseDto(Voyage voyage);
 
     List<VoyageResponseDto> voyagesToVoyageResponseDtos(List<Voyage> voyages);

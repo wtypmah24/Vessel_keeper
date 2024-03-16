@@ -4,6 +4,7 @@ import com.marine.vessel_keeper.dto.request.SeamanRequestDto;
 import com.marine.vessel_keeper.dto.response.SeamanResponseDto;
 import com.marine.vessel_keeper.entity.seaman.Seaman;
 import com.marine.vessel_keeper.entity.vessel.Vessel;
+import com.marine.vessel_keeper.entity.vessel.VesselType;
 import com.marine.vessel_keeper.exception.WrongCandidateException;
 import com.marine.vessel_keeper.mapper.SeamanMapper;
 import com.marine.vessel_keeper.repository.SeamanRepository;
@@ -50,10 +51,11 @@ public class SeamanService {
         Vessel vessel = vesselRepository.findByImoNumber(vesselId).orElseThrow();
 
         if (!hasCertificate(seaman)) throw new WrongCandidateException("Candidate has no certificates!");
-        if (!isCertificateUpdate(seaman)) throw new WrongCandidateException("Candidate's certificates are not up to date!");
+        if (!isCertificateUpdate(seaman))
+            throw new WrongCandidateException("Candidate's certificates are not up to date!");
         if (seaman.isHasJob()) throw new WrongCandidateException("Candidate is already on a vessel!");
 
-        return vessel.addSeamanToCrew(seaman).stream().map(seamanMapper::seamanToSeamanResponseDto).collect(Collectors.toSet());
+        return seamanMapper.seamenToSeamenResponseDtos(vessel.addSeamanToCrew(seaman));
     }
 
     @Transactional
@@ -64,13 +66,20 @@ public class SeamanService {
         recordService.addRecordOfService(seaman, vessel, comment);
 
         vessel.signOffSeaman(seaman);
-
-        return vessel.getCrew().stream().map(seamanMapper::seamanToSeamanResponseDto).collect(Collectors.toSet());
+        return seamanMapper.seamenToSeamenResponseDtos(vessel.getCrew());
     }
+
     @Transactional
     public Set<SeamanResponseDto> changeCrew(long signOnId, long signOffId, long vesselId, String comment) throws WrongCandidateException {
         signOffSeaman(signOffId, vesselId, comment);
         return hireSeaman(signOnId, vesselId);
+    }
+
+    @Transactional
+    public Set<SeamanResponseDto> findApplicableSeamenToVessel(long imoNumber) {
+        Vessel vessel = vesselRepository.findByImoNumber(imoNumber).orElseThrow();
+        VesselType vesselType = vessel.getVesselType();
+        return seamanMapper.seamenToSeamenResponseDtos(seamanRepository.findSeamenByShipType(vesselType));
     }
 
     private boolean hasCertificate(Seaman seaman) {
