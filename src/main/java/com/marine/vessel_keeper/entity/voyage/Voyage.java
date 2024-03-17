@@ -24,4 +24,33 @@ public class Voyage {
     private LocalDate endDate;
     @OneToOne
     private Vessel vessel;
+
+
+    public long getId() {
+        return id;
+    }
+
+    public String getPortOfLoading() {
+        return portOfLoading;
+    }
+
+    public String getPortOfDischarging() {
+        return portOfDischarging;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public Vessel getVessel() {
+        return vessel;
+    }
+
+    public void setVessel(Vessel vessel) {
+        this.vessel = vessel;
+    }
 }

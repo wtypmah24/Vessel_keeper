@@ -6,11 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.LongStream;
 
 public interface VoyageRepository extends JpaRepository<Voyage, Long> {
     Optional<Voyage> findById(long id);
-    List<Voyage> findByVesselIsEmpty();
-    List<Voyage> findByPortOfDischargingAndEndDateAndVesselIsNotEmpty(String portOfDischarging, LocalDate endDate);
-    List<Voyage> findByPortOfLoadingAndStartDateAndVesselIsEmpty(String portOfLoading, LocalDate startDate);
+    List<Voyage> findByVesselIsNull();
+    List<Voyage> findByPortOfDischargingAndEndDateAndVesselIsNotNull(String portOfDischarging, LocalDate endDate);
+    List<Voyage> findByPortOfLoadingAndStartDateAndVesselIsNull(String portOfLoading, LocalDate startDate);
 }

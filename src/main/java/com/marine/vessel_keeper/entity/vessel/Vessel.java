@@ -32,4 +32,20 @@ public class Vessel {
         crew.remove(seaman);
         seaman.setHasJob(false);
     }
+
+    public VesselType getVesselType() {
+        return vesselType;
+    }
+
+    public Set<Seaman> getCrew() {
+        return crew;
+    }
+
+    public void setVoyage(Voyage voyage) {
+        this.voyage = voyage;
+    }
+
+    public Voyage getVoyage() {
+        return voyage;
+    }
 }

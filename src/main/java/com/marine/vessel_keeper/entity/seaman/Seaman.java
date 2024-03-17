@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.security.cert.Certificate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,5 +35,21 @@ public class Seaman {
     public Set<SeamanCertificate> removeCertificate(SeamanCertificate certificate){
         this.certificates.remove(certificate);
         return certificates;
+    }
+
+    public boolean isHasJob() {
+        return hasJob;
+    }
+
+    public void setHasJob(boolean hasJob) {
+        this.hasJob = hasJob;
+    }
+
+    public Set<SeamanCertificate> getCertificates() {
+        return certificates;
+    }
+
+    public void setCertificates(Set<SeamanCertificate> certificates) {
+        this.certificates = certificates;
     }
 }
