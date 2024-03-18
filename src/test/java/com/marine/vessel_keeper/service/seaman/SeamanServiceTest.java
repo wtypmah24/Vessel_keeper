@@ -1,18 +1,22 @@
 package com.marine.vessel_keeper.service.seaman;
 
 import com.marine.vessel_keeper.dto.request.SeamanRequestDto;
+import com.marine.vessel_keeper.entity.seaman.RecordOfService;
 import com.marine.vessel_keeper.entity.seaman.Seaman;
 import com.marine.vessel_keeper.entity.seaman.SeamanCertificate;
 import com.marine.vessel_keeper.entity.vessel.Vessel;
+import com.marine.vessel_keeper.entity.vessel.VesselType;
 import com.marine.vessel_keeper.exception.WrongCandidateException;
 import com.marine.vessel_keeper.mapper.SeamanMapper;
 import com.marine.vessel_keeper.repository.SeamanRepository;
 import com.marine.vessel_keeper.repository.VesselRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -24,26 +28,26 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class SeamanServiceTest {
-    @Mock
+    @Mock(lenient = true)
     private SeamanMapper seamanMapper;
-    @Mock
+    @Mock(lenient = true)
     private SeamanRepository seamanRepository;
-    @Mock
+    @Mock(lenient = true)
     private VesselRepository vesselRepository;
-    @Mock
-    private RecordOfServiceService recordService;
     @InjectMocks
     SeamanService service;
     private final Set<Seaman> laborPool = new HashSet<>();
     private Seaman seaman;
     private Vessel vessel;
     private final String comment = "good";
+    @Mock(lenient = true)
+    private RecordOfServiceService record;
     private SeamanCertificate certificate;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         seaman = new Seaman();
         vessel = new Vessel();
         when(seamanMapper.seamanRequestDtoToSeaman(any(SeamanRequestDto.class))).thenReturn(seaman);
@@ -61,6 +65,7 @@ class SeamanServiceTest {
         certificate = new SeamanCertificate();
         certificate.setExpireDate(LocalDate.of(2024, 12, 12));
     }
+
     @Test
     void addSeamanToLaborPool() {
         service.addSeamanToLaborPool(mock(SeamanRequestDto.class));
@@ -83,15 +88,15 @@ class SeamanServiceTest {
 
     @Test
     void hireSeamanNegativeCases() throws WrongCandidateException {
-        WrongCandidateException exception =  assertThrows(WrongCandidateException.class, ()-> service.hireSeaman(1L, 1L));
+        WrongCandidateException exception = assertThrows(WrongCandidateException.class, () -> service.hireSeaman(1L, 1L));
         assertEquals("Candidate has no certificates!", exception.getMessage());
         certificate.setExpireDate(LocalDate.of(2024, 3, 20));
         seaman.addCertificate(certificate);
-        exception = assertThrows(WrongCandidateException.class, ()-> service.hireSeaman(1L, 1L));
+        exception = assertThrows(WrongCandidateException.class, () -> service.hireSeaman(1L, 1L));
         assertEquals("Candidate's certificates are not up to date!", exception.getMessage());
         seaman.setHasJob(true);
         certificate.setExpireDate(LocalDate.of(2024, 12, 20));
-        exception = assertThrows(WrongCandidateException.class, ()-> service.hireSeaman(1L, 1L));
+        exception = assertThrows(WrongCandidateException.class, () -> service.hireSeaman(1L, 1L));
         assertEquals("Candidate is already on a vessel!", exception.getMessage());
     }
 
@@ -101,9 +106,5 @@ class SeamanServiceTest {
         service.hireSeaman(1L, 1L);
         service.signOffSeaman(1L, 1L, comment);
         assertTrue(vessel.getCrew().isEmpty());
-    }
-    @Test
-    void findApplicableSeamenToVessel() {
-    //////..
     }
 }

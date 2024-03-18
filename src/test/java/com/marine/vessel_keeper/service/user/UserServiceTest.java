@@ -8,10 +8,12 @@ import com.marine.vessel_keeper.mapper.UserMapper;
 import com.marine.vessel_keeper.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 //TODO: Class needs to be refactored! Duplicated code!
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
     @Mock
     private UserRepository repository;
@@ -50,15 +52,11 @@ class UserServiceTest {
         List<User> users = new ArrayList<>();
         when(mapper.userDtoToUser(any(UserRequestDto.class))).thenReturn(new User());
         when(mapper.userToUserResponseDto(any(User.class))).thenReturn(mock(UserResponseDto.class));
-
-        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         doAnswer(invocation -> {
-            User user = userCaptor.getValue();
+            User user = new User();
             users.add(user);
-            return null;
-        }).when(repository).save(userCaptor.capture());
-
-
+            return user;
+        }).when(repository).save(any(User.class));
         service.createUser(candidate);
         assertFalse(users.isEmpty());
     }
@@ -103,4 +101,4 @@ class UserServiceTest {
         assertThrows(Exception.class, () -> service.deleteUser(login));
         verify(repository, never()).deleteById(anyLong());
     }
-}///
+}
