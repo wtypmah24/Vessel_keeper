@@ -103,4 +103,4 @@ class UserServiceTest {
         assertThrows(Exception.class, () -> service.deleteUser(login));
         verify(repository, never()).deleteById(anyLong());
     }
-}
+}///
