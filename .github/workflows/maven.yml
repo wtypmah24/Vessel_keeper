@@ -26,4 +26,4 @@ jobs:
     # Добавляем шаг для запуска тестов
     - name: Run tests
       run: mvn test
-      working-directory: /Users/taras/Documents/Java theory/final project/Vessel_keeper/src/test # Укажите путь к вашему каталогу с тестами
+      working-directory: test # Укажите путь к вашему каталогу с тестами
