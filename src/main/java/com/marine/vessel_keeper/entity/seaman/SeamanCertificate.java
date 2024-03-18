@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "seaman_certificate")
@@ -23,7 +21,7 @@ public class SeamanCertificate {
     @ManyToOne
     private Seaman seaman;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
