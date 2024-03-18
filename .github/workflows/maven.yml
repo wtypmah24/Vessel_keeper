@@ -23,6 +23,10 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
+    # Добавляем шаг для сборки проекта
+    - name: Build project
+      run: mvn clean install -DskipTests=true
+
     # Добавляем шаг для запуска тестов
     - name: Run tests
       run: mvn test
