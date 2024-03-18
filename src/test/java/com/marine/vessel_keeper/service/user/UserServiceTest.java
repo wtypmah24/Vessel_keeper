@@ -89,7 +89,7 @@ class UserServiceTest {
         users.add(user);
 
         when(repository.findUserByLogin(login)).thenReturn(Optional.of(user));
-        doAnswer(u-> users.remove(users.get(anyInt()))).when(repository).deleteById(anyLong());
+        doAnswer(u-> users.remove(users.get(0))).when(repository).deleteById(anyLong());
 
         service.deleteUser(login);
         assertTrue(users.isEmpty());

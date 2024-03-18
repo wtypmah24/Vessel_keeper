@@ -19,4 +19,36 @@ public class RecordOfService {
     private Vessel vessel;
     @Column(name = "comment")
     private String comment;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Seaman getSeaman() {
+        return seaman;
+    }
+
+    public void setSeaman(Seaman seaman) {
+        this.seaman = seaman;
+    }
+
+    public Vessel getVessel() {
+        return vessel;
+    }
+
+    public void setVessel(Vessel vessel) {
+        this.vessel = vessel;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 }

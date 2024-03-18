@@ -22,4 +22,36 @@ public class SeamanCertificate {
     private LocalDate expireDate;
     @ManyToOne
     private Seaman seaman;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public LocalDate getExpireDate() {
+        return expireDate;
+    }
+
+    public void setExpireDate(LocalDate expireDate) {
+        this.expireDate = expireDate;
+    }
+
+    public Seaman getSeaman() {
+        return seaman;
+    }
+
+    public void setSeaman(Seaman seaman) {
+        this.seaman = seaman;
+    }
 }
