@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.Set;
 @Entity
 @Table(name = "vessel")
@@ -19,7 +20,7 @@ public class Vessel {
     @Column(name = "vessel_type")
     private VesselType vesselType;
     @OneToMany
-    private Set<Seaman> crew;
+    private Set<Seaman> crew = new HashSet<>();
     @OneToOne
     private Voyage voyage;
 
@@ -47,5 +48,9 @@ public class Vessel {
 
     public Voyage getVoyage() {
         return voyage;
+    }
+
+    public void setCrew(Set<Seaman> crew) {
+        this.crew = crew;
     }
 }

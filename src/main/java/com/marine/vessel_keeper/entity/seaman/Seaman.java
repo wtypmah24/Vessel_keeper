@@ -37,6 +37,11 @@ public class Seaman {
         return certificates;
     }
 
+    public void addServiceRecord(RecordOfService record){
+        this.recordOfServices.add(record);
+        record.setSeaman(this);
+    }
+
     public boolean isHasJob() {
         return hasJob;
     }
@@ -51,5 +56,13 @@ public class Seaman {
 
     public void setCertificates(Set<SeamanCertificate> certificates) {
         this.certificates = certificates;
+    }
+
+    public Set<RecordOfService> getRecordOfServices() {
+        return recordOfServices;
+    }
+
+    public void setRecordOfServices(Set<RecordOfService> recordOfServices) {
+        this.recordOfServices = recordOfServices;
     }
 }
