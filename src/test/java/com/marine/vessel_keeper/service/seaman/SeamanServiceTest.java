@@ -104,6 +104,6 @@ class SeamanServiceTest {
     }
     @Test
     void findApplicableSeamenToVessel() {
-
+    //////
     }
 }
