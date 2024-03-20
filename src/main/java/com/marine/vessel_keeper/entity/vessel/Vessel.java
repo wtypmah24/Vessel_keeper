@@ -4,13 +4,17 @@ import com.marine.vessel_keeper.entity.seaman.Seaman;
 import com.marine.vessel_keeper.entity.voyage.Voyage;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
 @Entity
 @Table(name = "vessel")
 @Data
+@EqualsAndHashCode(exclude = {"crew"})
+@ToString(exclude = {"crew"})
 @NoArgsConstructor
 public class Vessel {
     @Id
@@ -19,7 +23,7 @@ public class Vessel {
     private String name;
     @Column(name = "vessel_type")
     private VesselType vesselType;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Seaman> crew = new HashSet<>();
     @OneToOne
     private Voyage voyage;
@@ -34,23 +38,4 @@ public class Vessel {
         seaman.setHasJob(false);
     }
 
-    public VesselType getVesselType() {
-        return vesselType;
-    }
-
-    public Set<Seaman> getCrew() {
-        return crew;
-    }
-
-    public void setVoyage(Voyage voyage) {
-        this.voyage = voyage;
-    }
-
-    public Voyage getVoyage() {
-        return voyage;
-    }
-
-    public void setCrew(Set<Seaman> crew) {
-        this.crew = crew;
-    }
 }

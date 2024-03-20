@@ -5,5 +5,5 @@ public enum Rank {
     CHIEF_OFFICER,
     SECOND_OFFICER,
     ORDINARY_SEAMAN,
-    ENGINEER;
+    ENGINEER
 }

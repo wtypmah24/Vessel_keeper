@@ -2,7 +2,9 @@ package com.marine.vessel_keeper.entity.seaman;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,6 +12,8 @@ import java.util.Set;
 @Entity
 @Table(name = "seaman")
 @Data
+@EqualsAndHashCode(exclude = {"recordOfServices", "certificates", "hasJob"})
+@ToString(exclude = {"recordOfServices", "certificates"})
 @NoArgsConstructor
 public class Seaman {
     @Id
@@ -21,9 +25,9 @@ public class Seaman {
     private Rank rank;
     @Column(name = "has_job")
     private boolean hasJob = false;
-    @OneToMany
+    @OneToMany(mappedBy = "seaman", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SeamanCertificate> certificates = new HashSet<>();
-    @OneToMany
+    @OneToMany(mappedBy = "seaman", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RecordOfService> recordOfServices = new HashSet<>();
 
     public Set<SeamanCertificate> addCertificate(SeamanCertificate certificate) {
@@ -40,29 +44,5 @@ public class Seaman {
     public void addServiceRecord(RecordOfService record){
         this.recordOfServices.add(record);
         record.setSeaman(this);
-    }
-
-    public boolean isHasJob() {
-        return hasJob;
-    }
-
-    public void setHasJob(boolean hasJob) {
-        this.hasJob = hasJob;
-    }
-
-    public Set<SeamanCertificate> getCertificates() {
-        return certificates;
-    }
-
-    public void setCertificates(Set<SeamanCertificate> certificates) {
-        this.certificates = certificates;
-    }
-
-    public Set<RecordOfService> getRecordOfServices() {
-        return recordOfServices;
-    }
-
-    public void setRecordOfServices(Set<RecordOfService> recordOfServices) {
-        this.recordOfServices = recordOfServices;
     }
 }

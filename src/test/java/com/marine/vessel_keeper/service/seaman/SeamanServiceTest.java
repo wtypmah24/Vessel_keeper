@@ -49,6 +49,7 @@ class SeamanServiceTest {
     @BeforeEach
     void setUp() {
         seaman = new Seaman();
+        seaman.setName("Popeye");
         vessel = new Vessel();
         when(seamanMapper.seamanRequestDtoToSeaman(any(SeamanRequestDto.class))).thenReturn(seaman);
         when(seamanRepository.save(any(Seaman.class))).thenAnswer(invocation -> {
@@ -103,8 +104,11 @@ class SeamanServiceTest {
     @Test
     void signOffSeaman() throws WrongCandidateException {
         seaman.addCertificate(certificate);
+        System.out.println(vessel.getCrew());
         service.hireSeaman(1L, 1L);
+        System.out.println(vessel.getCrew());
         service.signOffSeaman(1L, 1L, comment);
+        System.out.println(vessel.getCrew());
         assertTrue(vessel.getCrew().isEmpty());
     }
 }
