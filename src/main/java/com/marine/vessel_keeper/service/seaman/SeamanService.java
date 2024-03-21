@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class SeamanService {
@@ -32,6 +34,10 @@ public class SeamanService {
         this.seamanRepository = seamanRepository;
         this.vesselRepository = vesselRepository;
         this.recordService = recordService;
+    }
+    @Transactional
+    public List<SeamanResponseDto> getAllSeamen(){
+        return seamanRepository.findAll().stream().map(seamanMapper::seamanToSeamanResponseDto).collect(Collectors.toList());
     }
 
     @Transactional
