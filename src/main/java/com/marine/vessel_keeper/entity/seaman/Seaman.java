@@ -22,6 +22,7 @@ public class Seaman {
     @Column(name = "name")
     private String name;
     @Column(name = "rank")
+    @Enumerated(EnumType.STRING)
     private Rank rank;
     @Column(name = "has_job")
     private boolean hasJob = false;
@@ -36,12 +37,12 @@ public class Seaman {
         return certificates;
     }
 
-    public Set<SeamanCertificate> removeCertificate(SeamanCertificate certificate){
+    public Set<SeamanCertificate> removeCertificate(SeamanCertificate certificate) {
         this.certificates.remove(certificate);
         return certificates;
     }
 
-    public void addServiceRecord(RecordOfService record){
+    public void addServiceRecord(RecordOfService record) {
         this.recordOfServices.add(record);
         record.setSeaman(this);
     }

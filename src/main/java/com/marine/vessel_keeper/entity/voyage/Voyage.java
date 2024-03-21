@@ -4,10 +4,13 @@ import com.marine.vessel_keeper.entity.vessel.Vessel;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import java.time.LocalDate;
 @Entity
 @Table(name = "voyage")
 @NoArgsConstructor
+@ToString(exclude = "vessel")
 @Data
 public class Voyage {
     @Id

@@ -1,12 +1,10 @@
 package com.marine.vessel_keeper.service.seaman;
 
 import com.marine.vessel_keeper.dto.request.SeamanRequestDto;
-import com.marine.vessel_keeper.entity.seaman.RecordOfService;
 import com.marine.vessel_keeper.entity.seaman.Seaman;
 import com.marine.vessel_keeper.entity.seaman.SeamanCertificate;
 import com.marine.vessel_keeper.entity.vessel.Vessel;
-import com.marine.vessel_keeper.entity.vessel.VesselType;
-import com.marine.vessel_keeper.exception.WrongCandidateException;
+import com.marine.vessel_keeper.exception.SeamanException;
 import com.marine.vessel_keeper.mapper.SeamanMapper;
 import com.marine.vessel_keeper.repository.SeamanRepository;
 import com.marine.vessel_keeper.repository.VesselRepository;
@@ -15,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
@@ -68,41 +65,41 @@ class SeamanServiceTest {
     }
 
     @Test
-    void addSeamanToLaborPool() {
+    void addSeamanToLaborPool() throws SeamanException {
         service.addSeamanToLaborPool(mock(SeamanRequestDto.class));
         assertEquals(1, laborPool.size());
     }
 
     @Test
-    void removeSeamanFromLaborPool() {
+    void removeSeamanFromLaborPool() throws SeamanException {
         service.addSeamanToLaborPool(mock(SeamanRequestDto.class));
         service.removeSeamanFromLaborPool(1L);
         assertTrue(laborPool.isEmpty());
     }
 
     @Test
-    void hireSeamanPositiveCase() throws WrongCandidateException {
+    void hireSeamanPositiveCase() throws SeamanException {
         seaman.addCertificate(certificate);
         service.hireSeaman(1L, 1L);
         assertEquals(1, vessel.getCrew().size());
     }
 
     @Test
-    void hireSeamanNegativeCases() throws WrongCandidateException {
-        WrongCandidateException exception = assertThrows(WrongCandidateException.class, () -> service.hireSeaman(1L, 1L));
+    void hireSeamanNegativeCases() throws SeamanException {
+        SeamanException exception = assertThrows(SeamanException.class, () -> service.hireSeaman(1L, 1L));
         assertEquals("Candidate has no certificates!", exception.getMessage());
         certificate.setExpireDate(LocalDate.of(2024, 3, 20));
         seaman.addCertificate(certificate);
-        exception = assertThrows(WrongCandidateException.class, () -> service.hireSeaman(1L, 1L));
+        exception = assertThrows(SeamanException.class, () -> service.hireSeaman(1L, 1L));
         assertEquals("Candidate's certificates are not up to date!", exception.getMessage());
         seaman.setHasJob(true);
         certificate.setExpireDate(LocalDate.of(2024, 12, 20));
-        exception = assertThrows(WrongCandidateException.class, () -> service.hireSeaman(1L, 1L));
+        exception = assertThrows(SeamanException.class, () -> service.hireSeaman(1L, 1L));
         assertEquals("Candidate is already on a vessel!", exception.getMessage());
     }
 
     @Test
-    void signOffSeaman() throws WrongCandidateException {
+    void signOffSeaman() throws SeamanException {
         seaman.addCertificate(certificate);
         System.out.println(vessel.getCrew());
         service.hireSeaman(1L, 1L);

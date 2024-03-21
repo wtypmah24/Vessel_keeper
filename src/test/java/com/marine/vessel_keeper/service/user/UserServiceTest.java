@@ -3,18 +3,14 @@ package com.marine.vessel_keeper.service.user;
 import com.marine.vessel_keeper.dto.request.UserRequestDto;
 import com.marine.vessel_keeper.dto.response.UserResponseDto;
 import com.marine.vessel_keeper.entity.user.User;
-import com.marine.vessel_keeper.exception.WrongCandidateException;
+import com.marine.vessel_keeper.exception.UserException;
 import com.marine.vessel_keeper.mapper.UserMapper;
 import com.marine.vessel_keeper.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
 //TODO: Class needs to be refactored! Duplicated code!
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -34,8 +31,8 @@ class UserServiceTest {
     private UserService service;
 
     @Test
-    void createUserMethod() throws WrongCandidateException {
-        UserRequestDto candidate = mock(UserRequestDto.class);
+    void createUserMethod() throws UserException {
+        UserRequestDto candidate = new UserRequestDto("test", "testLogin", "password", "OWNER");
 
         when(repository.save(any(User.class))).thenReturn(new User());
         when(mapper.userDtoToUser(any(UserRequestDto.class))).thenReturn(new User());
@@ -46,8 +43,8 @@ class UserServiceTest {
     }
 
     @Test
-    void createUserCheck() throws WrongCandidateException {
-        UserRequestDto candidate = mock(UserRequestDto.class);
+    void createUserCheck() throws UserException {
+        UserRequestDto candidate = new UserRequestDto("test", "testLogin", "password", "OWNER");
 
         List<User> users = new ArrayList<>();
         when(mapper.userDtoToUser(any(UserRequestDto.class))).thenReturn(new User());
@@ -63,11 +60,11 @@ class UserServiceTest {
 
     @Test
     void createUserNegativeCase() {
-        assertThrows(WrongCandidateException.class, () -> service.createUser(null));
+        assertThrows(UserException.class, () -> service.createUser(null));
     }
 
     @Test
-    void deleteUser() {
+    void deleteUser() throws UserException {
         String login = "testLogin";
         User user = new User();
         user.setId(1L);
@@ -77,7 +74,7 @@ class UserServiceTest {
     }
 
     @Test
-    void deleteUserCheck() {
+    void deleteUserCheck() throws UserException {
         User user = new User();
         String login = "testLogin";
         user.setId(1L);
@@ -87,7 +84,7 @@ class UserServiceTest {
         users.add(user);
 
         when(repository.findUserByLogin(login)).thenReturn(Optional.of(user));
-        doAnswer(u-> users.remove(users.get(0))).when(repository).deleteById(anyLong());
+        doAnswer(u -> users.remove(users.get(0))).when(repository).deleteById(anyLong());
 
         service.deleteUser(login);
         assertTrue(users.isEmpty());

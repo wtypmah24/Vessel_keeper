@@ -10,6 +10,7 @@ import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
+
 @Entity
 @Table(name = "vessel")
 @Data
@@ -18,24 +19,26 @@ import java.util.Set;
 @NoArgsConstructor
 public class Vessel {
     @Id
+    @Column(name = "imo_number", unique = true)
     private long imoNumber;
     @Column(name = "name")
     private String name;
     @Column(name = "vessel_type")
+    @Enumerated(EnumType.STRING)
     private VesselType vesselType;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Seaman> crew = new HashSet<>();
     @OneToOne
     private Voyage voyage;
 
-    public Set<Seaman> addSeamanToCrew(Seaman seaman){
+    public Set<Seaman> addSeamanToCrew(Seaman seaman) {
         this.crew.add(seaman);
         seaman.setHasJob(true);
         return crew;
     }
-    public void signOffSeaman(Seaman seaman){
+
+    public void signOffSeaman(Seaman seaman) {
         crew.remove(seaman);
         seaman.setHasJob(false);
     }
-
 }

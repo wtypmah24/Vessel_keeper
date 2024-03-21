@@ -136,6 +136,4 @@ class VoyageRepositoryTest {
                 Arguments.of("Antwerp", LocalDate.of(2024, 6, 1), false)
         );
     }
-
-
 }
