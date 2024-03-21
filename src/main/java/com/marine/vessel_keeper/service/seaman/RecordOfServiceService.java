@@ -1,6 +1,7 @@
 package com.marine.vessel_keeper.service.seaman;
 
 import com.marine.vessel_keeper.dto.request.RecordOfServiceRequestDto;
+import com.marine.vessel_keeper.entity.seaman.RecordOfService;
 import com.marine.vessel_keeper.entity.seaman.Seaman;
 import com.marine.vessel_keeper.entity.vessel.Vessel;
 import com.marine.vessel_keeper.mapper.RecordOfServiceMapper;
@@ -22,9 +23,10 @@ public class RecordOfServiceService {
     @Transactional
     public void addRecordOfService(Seaman seaman, Vessel vessel, String comment){
         RecordOfServiceRequestDto candidate = createRequestDto(seaman, vessel, comment);
-        repository.save(mapper.recordOfServiceRequestDtoToRecordOfService(candidate));
+        RecordOfService record = mapper.recordOfServiceRequestDtoToRecordOfService(candidate);
+        seaman.addServiceRecord(record);
+        repository.save(record);
     }
-    @Transactional
     private RecordOfServiceRequestDto createRequestDto(Seaman seaman, Vessel vessel, String comment){
         return new RecordOfServiceRequestDto(seaman,vessel, comment);
     }

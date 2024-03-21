@@ -5,7 +5,8 @@ import com.marine.vessel_keeper.dto.response.SeamanResponseDto;
 import com.marine.vessel_keeper.entity.seaman.Seaman;
 import com.marine.vessel_keeper.entity.vessel.Vessel;
 import com.marine.vessel_keeper.entity.vessel.VesselType;
-import com.marine.vessel_keeper.exception.WrongCandidateException;
+import com.marine.vessel_keeper.exception.SeamanException;
+import com.marine.vessel_keeper.exception.VesselException;
 import com.marine.vessel_keeper.mapper.SeamanMapper;
 import com.marine.vessel_keeper.repository.SeamanRepository;
 import com.marine.vessel_keeper.repository.VesselRepository;
@@ -15,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class SeamanService {
@@ -35,26 +35,21 @@ public class SeamanService {
     }
 
     @Transactional
-    public SeamanResponseDto addSeamanToLaborPool(SeamanRequestDto candidate) {
+    public SeamanResponseDto addSeamanToLaborPool(SeamanRequestDto candidate) throws SeamanException {
+        if (candidate == null) throw new SeamanException("You didn't provide seaman candidate!");
         return seamanMapper.seamanToSeamanResponseDto(seamanRepository.save(seamanMapper.seamanRequestDtoToSeaman(candidate)));
     }
 
     @Transactional
-    public void removeSeamanFromLaborPool(long seamanId) {
-        seamanRepository.delete(seamanRepository.findById(seamanId).orElseThrow());
+    public void removeSeamanFromLaborPool(long seamanId) throws SeamanException {
+        seamanRepository.delete(seamanRepository.findById(seamanId).orElseThrow(() -> new SeamanException("There is no seaman with id: " + seamanId)));
     }
 
-    //TODO: Refactor this method
     @Transactional
-    public Set<SeamanResponseDto> hireSeaman(long seamanId, long vesselId) throws WrongCandidateException {
+    public Set<SeamanResponseDto> hireSeaman(long seamanId, long vesselId) throws SeamanException {
         Seaman seaman = seamanRepository.findById(seamanId).orElseThrow();
         Vessel vessel = vesselRepository.findByImoNumber(vesselId).orElseThrow();
-
-        if (!hasCertificate(seaman)) throw new WrongCandidateException("Candidate has no certificates!");
-        if (!isCertificateUpdate(seaman))
-            throw new WrongCandidateException("Candidate's certificates are not up to date!");
-        if (seaman.isHasJob()) throw new WrongCandidateException("Candidate is already on a vessel!");
-
+        certificateCheck(seaman);
         return seamanMapper.seamenToSeamenResponseDtos(vessel.addSeamanToCrew(seaman));
     }
 
@@ -70,16 +65,23 @@ public class SeamanService {
     }
 
     @Transactional
-    public Set<SeamanResponseDto> changeCrew(long signOnId, long signOffId, long vesselId, String comment) throws WrongCandidateException {
+    public Set<SeamanResponseDto> changeCrew(long signOnId, long signOffId, long vesselId, String comment) throws SeamanException {
         signOffSeaman(signOffId, vesselId, comment);
         return hireSeaman(signOnId, vesselId);
     }
 
     @Transactional
-    public Set<SeamanResponseDto> findApplicableSeamenToVessel(long imoNumber) {
-        Vessel vessel = vesselRepository.findByImoNumber(imoNumber).orElseThrow();
+    public Set<SeamanResponseDto> findApplicableSeamenToVessel(long imoNumber) throws VesselException {
+        Vessel vessel = vesselRepository.findByImoNumber(imoNumber).orElseThrow(() -> new VesselException("There is no vessel with provided IMO number!"));
         VesselType vesselType = vessel.getVesselType();
         return seamanMapper.seamenToSeamenResponseDtos(seamanRepository.findSeamenByShipType(vesselType));
+    }
+
+    private void certificateCheck(Seaman seaman) throws SeamanException {
+        if (!hasCertificate(seaman)) throw new SeamanException("Candidate has no certificates!");
+        if (!isCertificateUpdate(seaman))
+            throw new SeamanException("Candidate's certificates are not up to date!");
+        if (seaman.isHasJob()) throw new SeamanException("Candidate is already on a vessel!");
     }
 
     private boolean hasCertificate(Seaman seaman) {

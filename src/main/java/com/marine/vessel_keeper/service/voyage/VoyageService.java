@@ -49,20 +49,20 @@ public class VoyageService {
 
     @Transactional
     public List<VoyageResponseDto> getAllAvailableVoyages() {
-        return mapper.voyagesToVoyageResponseDtos(voyageRepository.findByVesselIsEmpty());
+        return mapper.voyagesToVoyageResponseDtos(voyageRepository.findByVesselIsNull());
     }
 
     @Transactional
     public List<VoyageResponseDto> getVoyagesByDischargingPortAndEndDate(String dischargingPort, LocalDate endDate) {
         return mapper.voyagesToVoyageResponseDtos(
-                voyageRepository.findByPortOfDischargingAndEndDateAndVesselIsNotEmpty(dischargingPort, endDate)
+                voyageRepository.findByPortOfDischargingAndEndDateAndVesselIsNotNull(dischargingPort, endDate)
         );
     }
 
     @Transactional
     public List<VoyageResponseDto> getVoyagesByLoadingPortAndStartDate(String loadingPort, LocalDate startDate) {
         return mapper.voyagesToVoyageResponseDtos(
-                voyageRepository.findByPortOfLoadingAndStartDateAndVesselIsEmpty(loadingPort, startDate)
+                voyageRepository.findByPortOfLoadingAndStartDateAndVesselIsNull(loadingPort, startDate)
         );
     }
 }
