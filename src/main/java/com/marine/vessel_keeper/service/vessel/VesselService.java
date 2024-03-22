@@ -4,6 +4,7 @@ import com.marine.vessel_keeper.dto.request.VesselRequestDto;
 import com.marine.vessel_keeper.dto.response.VesselResponseDto;
 import com.marine.vessel_keeper.entity.vessel.Vessel;
 import com.marine.vessel_keeper.entity.voyage.Voyage;
+import com.marine.vessel_keeper.exception.VesselException;
 import com.marine.vessel_keeper.mapper.VesselMapper;
 import com.marine.vessel_keeper.repository.VesselRepository;
 import com.marine.vessel_keeper.repository.VoyageRepository;
@@ -34,8 +35,8 @@ public class VesselService {
     }
 
     @Transactional
-    public void deleteVessel(long imoNumber) {
-        Vessel vessel = vesselRepository.findByImoNumber(imoNumber).orElseThrow();
+    public void deleteVessel(long imoNumber) throws VesselException {
+        Vessel vessel = vesselRepository.findByImoNumber(imoNumber).orElseThrow(() -> new VesselException("There is mo vessel with IMO number: " + imoNumber));
         vesselRepository.delete(vessel);
     }
 

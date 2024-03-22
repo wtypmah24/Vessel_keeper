@@ -3,6 +3,7 @@ package com.marine.vessel_keeper.service.vessel;
 import com.marine.vessel_keeper.dto.request.VesselRequestDto;
 import com.marine.vessel_keeper.dto.response.VesselResponseDto;
 import com.marine.vessel_keeper.entity.vessel.Vessel;
+import com.marine.vessel_keeper.exception.VesselException;
 import com.marine.vessel_keeper.mapper.VesselMapper;
 import com.marine.vessel_keeper.repository.VesselRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +55,7 @@ class VesselServiceTest {
     }
 
     @Test
-    void deleteVessel() {
+    void deleteVessel() throws VesselException {
         service.addVessel(mock(VesselRequestDto.class));
         service.deleteVessel(1L);
         assertTrue(vessels.isEmpty());

@@ -6,7 +6,8 @@
 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
 
-    <changeSet id="23dd8fe6-92a9-4a96-9e56-ccab5b1b12d1" author="${S_Taras}">  <!--пользователь БД будет указан автором-->
+    <changeSet id="23dd8fe6-92a9-4a96-9e56-ccab5b1b12d1"
+               author="${S_Taras}">  <!--пользователь БД будет указан автором-->
         <insert tableName="seaman">
             <column name="name" value="Bobr_Kurwa"/>
             <column name="rank" value="ENGINEER"/>
@@ -145,6 +146,53 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
             <column name="has_job" valueBoolean="false"/>
         </insert>
 
+    </changeSet>
+    <changeSet id="insert_vessels" author="${S_Taras}">
+        <insert tableName="vessel">
+            <column name="name" value="BBC Pluto"/>
+            <column name="vessel_type" value="BULKER"/>
+            <column name="imo_number" value="1"/>
+        </insert>
+        <insert tableName="vessel">
+            <column name="name" value="Sjard"/>
+            <column name="vessel_type" value="HEAVY_LIFT"/>
+            <column name="imo_number" value="2"/>
+        </insert>
+        <insert tableName="vessel">
+            <column name="name" value="Wybelsum"/>
+            <column name="vessel_type" value="HEAVY_LIFT"/>
+            <column name="imo_number" value="3"/>
+        </insert>
+        <insert tableName="vessel">
+            <column name="name" value="BBC Mars"/>
+            <column name="vessel_type" value="BULKER"/>
+            <column name="imo_number" value="4"/>
+        </insert>
+        <insert tableName="vessel">
+            <column name="name" value="BBC Amethyst"/>
+            <column name="vessel_type" value="HEAVY_LIFT"/>
+            <column name="imo_number" value="5"/>
+        </insert>
+        <insert tableName="vessel">
+            <column name="name" value="BBC Austria"/>
+            <column name="vessel_type" value="GENERAL_CARGO"/>
+            <column name="imo_number" value="6"/>
+        </insert>
+        <insert tableName="vessel">
+            <column name="name" value="BREB Treader"/>
+            <column name="vessel_type" value="BULKER"/>
+            <column name="imo_number" value="7"/>
+        </insert>
+        <insert tableName="vessel">
+            <column name="name" value="BBC Lade"/>
+            <column name="vessel_type" value="GENERAL_CARGO"/>
+            <column name="imo_number" value="8"/>
+        </insert>
+        <insert tableName="vessel">
+            <column name="name" value="BBC Philippines"/>
+            <column name="vessel_type" value="BULKER"/>
+            <column name="imo_number" value="9"/>
+        </insert>
     </changeSet>
 
 </databaseChangeLog>
