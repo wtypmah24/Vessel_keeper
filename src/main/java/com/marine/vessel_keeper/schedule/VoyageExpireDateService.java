@@ -23,6 +23,6 @@ public class VoyageExpireDateService {
         Query query = entityManager.createQuery("DELETE FROM Voyage v WHERE v.endDate < :currentDate");
         query.setParameter("currentDate", currentDate);
         int deletedCount = query.executeUpdate();
-        System.out.println("Удалено устаревших записей: " + deletedCount);
+        System.out.println("Number of deleted expire dates: " + deletedCount);
     }
 }
