@@ -7,6 +7,7 @@ import com.marine.vessel_keeper.exception.UserException;
 import com.marine.vessel_keeper.mapper.UserMapper;
 import com.marine.vessel_keeper.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,17 +15,26 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     public UserResponseDto createUser(UserRequestDto userCandidate) throws UserException {
         checkUserCandidate(userCandidate);
-        return userMapper.userToUserResponseDto(userRepository.save(userMapper.userDtoToUser(userCandidate)));
+        String hashPassword = passwordEncoder.encode(userCandidate.password());
+
+        UserRequestDto newCandidate = new UserRequestDto(userCandidate.fullName(),
+                userCandidate.login(),
+                hashPassword,
+                userCandidate.role());
+
+        return userMapper.userToUserResponseDto(userRepository.save(userMapper.userDtoToUser(newCandidate)));
     }
 
     @Transactional
