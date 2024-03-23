@@ -2,18 +2,19 @@ package com.marine.vessel_keeper.controller.voyage;
 
 import com.marine.vessel_keeper.dto.request.VoyageRequestDto;
 import com.marine.vessel_keeper.dto.response.VoyageResponseDto;
-import com.marine.vessel_keeper.service.vessel.VesselService;
 import com.marine.vessel_keeper.service.voyage.VoyageService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/voyage")
+@Tag(name = "Voyage controller.",
+        description = "Here you can manage voyages.")
 public class VoyageController {
     private final VoyageService voyageService;
     @Autowired

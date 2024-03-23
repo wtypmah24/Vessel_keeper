@@ -2,6 +2,7 @@ package com.marine.vessel_keeper.service.user;
 
 import com.marine.vessel_keeper.dto.request.UserRequestDto;
 import com.marine.vessel_keeper.dto.response.UserResponseDto;
+import com.marine.vessel_keeper.entity.user.Role;
 import com.marine.vessel_keeper.exception.UserException;
 import com.marine.vessel_keeper.mapper.UserMapper;
 import com.marine.vessel_keeper.repository.UserRepository;
@@ -37,7 +38,13 @@ public class UserService {
 
     private void checkUserCandidate(UserRequestDto candidate) throws UserException {
         if (candidate == null) throw new UserException("You provided empty candidate!");
-        if (candidate.login().isBlank()) throw new UserException("You didn't provide user name");
-        if (candidate.password().isBlank()) throw new UserException("You didn't provide password!");
+        if (candidate.login() == null || candidate.login().isBlank()) throw new UserException("You didn't provide user name");
+        if (candidate.password() == null || candidate.password().isBlank()) throw new UserException("You didn't provide password!");
+        if (candidate.role() == null || candidate.role().isBlank()) throw new UserException("You didn't provide user's role!");
+        try {
+            Role.valueOf(candidate.role().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new UserException("Invalid role specified: " + candidate.role());
+        }
     }
 }
