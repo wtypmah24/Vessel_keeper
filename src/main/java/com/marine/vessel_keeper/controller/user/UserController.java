@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.naming.NotContextException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -25,6 +26,10 @@ public class UserController {
     @PostMapping("/create")
     public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto userRequestDto) throws UserException {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userRequestDto));
+    }
+    @GetMapping("/get")
+    public ResponseEntity<List<UserResponseDto>> getAllUsers(){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers());
     }
 
     @DeleteMapping("/delete/{login}")

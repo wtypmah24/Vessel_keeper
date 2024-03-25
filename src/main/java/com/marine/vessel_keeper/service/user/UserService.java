@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -35,6 +37,11 @@ public class UserService {
                 userCandidate.role());
 
         return userMapper.userToUserResponseDto(userRepository.save(userMapper.userDtoToUser(newCandidate)));
+    }
+
+    @Transactional
+    public List<UserResponseDto> getAllUsers(){
+        return userRepository.findAll().stream().map(userMapper::userToUserResponseDto).toList();
     }
 
     @Transactional
