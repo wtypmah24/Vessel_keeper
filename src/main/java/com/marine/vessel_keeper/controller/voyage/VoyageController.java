@@ -11,6 +11,7 @@ import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/voyage")
+@PreAuthorize("hasAnyAuthority('OPERATIONAL_MANAGER', 'OWNER')")
 @Tag(name = "Voyage controller.",
         description = "Here you can manage voyages.")
 public class VoyageController {
@@ -28,33 +30,39 @@ public class VoyageController {
         this.voyageService = voyageService;
     }
 
+    @PreAuthorize("hasAnyAuthority('OPERATIONAL_MANAGER', 'OWNER')")
     @PostMapping("/add")
     public ResponseEntity<VoyageResponseDto> addVoyage(@RequestBody VoyageRequestDto voyageRequestDto) throws VoyageException {
         return ResponseEntity.status(HttpStatus.CREATED).body(voyageService.addNewVoyage(voyageRequestDto));
     }
 
+    @PreAuthorize("hasAnyAuthority('OPERATIONAL_MANAGER', 'OWNER')")
     @GetMapping("/get_all")
     public ResponseEntity<List<VoyageResponseDto>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(voyageService.getAllVoyages());
     }
 
+    @PreAuthorize("hasAnyAuthority('OPERATIONAL_MANAGER', 'OWNER')")
     @GetMapping("/get_available")
     public ResponseEntity<List<VoyageResponseDto>> getAllAvailable() {
         return ResponseEntity.status(HttpStatus.OK).body(voyageService.getAllAvailableVoyages());
     }
 
+    @PreAuthorize("hasAnyAuthority('OPERATIONAL_MANAGER', 'OWNER')")
     @PostMapping("/assign")
     public ResponseEntity<VoyageResponseDto> assignVoyageToVessel(@RequestParam("voyageId") long voyageId,
                                                                   @RequestParam("imoNumber") long imoNumber) throws VoyageException, VesselException {
         return ResponseEntity.status(HttpStatus.OK).body(voyageService.assignVoyageToVessel(voyageId, imoNumber));
     }
 
+    @PreAuthorize("hasAnyAuthority('OPERATIONAL_MANAGER', 'OWNER')")
     @GetMapping("/get_end")
     public ResponseEntity<List<VoyageResponseDto>> getVoyagesByDischargingPortAndEndDate(@RequestParam("dischargingPort") String dischargingPort,
                                                                                          @RequestParam("endDate") LocalDate endDate) {
         return ResponseEntity.status(HttpStatus.OK).body(voyageService.getVoyagesByDischargingPortAndEndDate(dischargingPort, endDate));
     }
 
+    @PreAuthorize("hasAnyAuthority('OPERATIONAL_MANAGER', 'OWNER')")
     @GetMapping("/get_start")
     public ResponseEntity<List<VoyageResponseDto>> getVoyagesByLoadingPortAndStartDate(@RequestParam("loadingPort") String loadingPort,
                                                                                        @RequestParam("startDate") LocalDate startDate) {

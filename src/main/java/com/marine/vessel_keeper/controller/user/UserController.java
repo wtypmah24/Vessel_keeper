@@ -8,11 +8,12 @@ import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.naming.NotContextException;
 import java.util.List;
-
+@PreAuthorize("hasAuthority('OWNER')")
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -23,18 +24,19 @@ public class UserController {
         this.userService = userService;
     }
 
-
+    @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping("/create")
     public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto userRequestDto) throws UserException {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userRequestDto));
     }
-
+    @PreAuthorize("hasAuthority('OWNER')")
     @GetMapping
     public ResponseEntity<List<UserResponseDto>> getAllUsers() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers());
     }
 
     @DeleteMapping("/delete/{login}")
+    @PreAuthorize("hasAuthority('OWNER')")
     public void deleteUser(@PathVariable String login) throws UserException {
         userService.deleteUser(login);
     }

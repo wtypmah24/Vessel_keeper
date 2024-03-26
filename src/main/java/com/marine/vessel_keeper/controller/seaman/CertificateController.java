@@ -10,21 +10,25 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
 @RestController
 @RequestMapping("/certificates")
+@PreAuthorize("hasAnyAuthority('CREW_MANAGER','OWNER')")
 @Tag(name = "Seaman's certificates controller.",
         description = "Here you can add or remove seaman's certificate.")
 public class CertificateController {
     private final CertificateService certificateService;
+
     @Autowired
     public CertificateController(CertificateService certificateService) {
         this.certificateService = certificateService;
     }
 
+    @PreAuthorize("hasAnyAuthority('CREW_MANAGER', 'OWNER')")
     @PostMapping("/addCertificate/{seamanId}")
     @Operation(
             summary = "Add certificate to a seaman",
@@ -34,6 +38,8 @@ public class CertificateController {
                                                                               @PathVariable long seamanId) throws SeamanException, SeamanCertificateException {
         return ResponseEntity.status(HttpStatus.CREATED).body(certificateService.addCertificateToSeaman(certificateCandidate, seamanId));
     }
+
+    @PreAuthorize("hasAnyAuthority('CREW_MANAGER', 'OWNER')")
     @Operation(summary = "Remove seaman's certificate")
     @DeleteMapping("/removeCertificate/{certificateId}")
     public ResponseEntity<Set<CertificateResponseDto>> removeCertificate(@PathVariable long certificateId) throws SeamanCertificateException {

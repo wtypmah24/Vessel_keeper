@@ -9,10 +9,12 @@ import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/service_record")
+@PreAuthorize("hasAnyAuthority('CREW_MANAGER', 'OWNER')")
 @Tag(name = "Seaman's record of services controller.",
         description = "Here you can add manually working experience to a seaman.")
 public class RecordOfServiceController {
@@ -23,6 +25,7 @@ public class RecordOfServiceController {
         this.recordService = recordService;
     }
 
+    @PreAuthorize("hasAnyAuthority('CREW_MANAGER', 'OWNER')")
     @PostMapping("/add")
     @Operation(
             summary = "Add record of service to a seaman",
