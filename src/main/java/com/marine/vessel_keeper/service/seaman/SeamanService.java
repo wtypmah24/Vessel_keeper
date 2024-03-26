@@ -5,6 +5,7 @@ import com.marine.vessel_keeper.dto.response.SeamanResponseDto;
 import com.marine.vessel_keeper.entity.seaman.Seaman;
 import com.marine.vessel_keeper.entity.vessel.Vessel;
 import com.marine.vessel_keeper.entity.vessel.VesselType;
+import com.marine.vessel_keeper.exception.SeamanCertificateException;
 import com.marine.vessel_keeper.exception.SeamanException;
 import com.marine.vessel_keeper.exception.VesselException;
 import com.marine.vessel_keeper.mapper.SeamanMapper;
@@ -35,8 +36,9 @@ public class SeamanService {
         this.vesselRepository = vesselRepository;
         this.recordService = recordService;
     }
+
     @Transactional
-    public List<SeamanResponseDto> getAllSeamen(){
+    public List<SeamanResponseDto> getAllSeamen() {
         return seamanRepository.findAll().stream().map(seamanMapper::seamanToSeamanResponseDto).collect(Collectors.toList());
     }
 
@@ -52,7 +54,7 @@ public class SeamanService {
     }
 
     @Transactional
-    public Set<SeamanResponseDto> hireSeaman(long seamanId, long vesselId) throws SeamanException {
+    public Set<SeamanResponseDto> hireSeaman(long seamanId, long vesselId) throws SeamanException, SeamanCertificateException {
         Seaman seaman = seamanRepository.findById(seamanId).orElseThrow();
         Vessel vessel = vesselRepository.findByImoNumber(vesselId).orElseThrow();
         certificateCheck(seaman);
@@ -60,9 +62,9 @@ public class SeamanService {
     }
 
     @Transactional
-    public Set<SeamanResponseDto> signOffSeaman(long seamanId, long vesselId, String comment) {
-        Seaman seaman = seamanRepository.findById(seamanId).orElseThrow();
-        Vessel vessel = vesselRepository.findByImoNumber(vesselId).orElseThrow();
+    public Set<SeamanResponseDto> signOffSeaman(long seamanId, long imoNumber, String comment) throws SeamanException, VesselException {
+        Seaman seaman = seamanRepository.findById(seamanId).orElseThrow(() -> new SeamanException("There is no seaman with id: " + seamanId));
+        Vessel vessel = vesselRepository.findByImoNumber(imoNumber).orElseThrow(() -> new VesselException("There is no vessel with IMO number: " + imoNumber));
 
         recordService.addRecordOfService(seaman, vessel, comment);
 
@@ -71,7 +73,7 @@ public class SeamanService {
     }
 
     @Transactional
-    public Set<SeamanResponseDto> changeCrew(long signOnId, long signOffId, long vesselId, String comment) throws SeamanException {
+    public Set<SeamanResponseDto> changeCrew(long signOnId, long signOffId, long vesselId, String comment) throws SeamanException, VesselException, SeamanCertificateException {
         signOffSeaman(signOffId, vesselId, comment);
         return hireSeaman(signOnId, vesselId);
     }
@@ -83,10 +85,10 @@ public class SeamanService {
         return seamanMapper.seamenToSeamenResponseDtos(seamanRepository.findSeamenByShipType(vesselType));
     }
 
-    private void certificateCheck(Seaman seaman) throws SeamanException {
-        if (!hasCertificate(seaman)) throw new SeamanException("Candidate has no certificates!");
+    private void certificateCheck(Seaman seaman) throws SeamanException, SeamanCertificateException {
+        if (!hasCertificate(seaman)) throw new SeamanCertificateException("Candidate has no certificates!");
         if (!isCertificateUpdate(seaman))
-            throw new SeamanException("Candidate's certificates are not up to date!");
+            throw new SeamanCertificateException("Candidate's certificates are not up to date!");
         if (seaman.isHasJob()) throw new SeamanException("Candidate is already on a vessel!");
     }
 

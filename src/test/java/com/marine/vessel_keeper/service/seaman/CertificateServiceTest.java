@@ -4,6 +4,8 @@ import com.marine.vessel_keeper.dto.request.CertificateRequestDto;
 import com.marine.vessel_keeper.dto.response.CertificateResponseDto;
 import com.marine.vessel_keeper.entity.seaman.Seaman;
 import com.marine.vessel_keeper.entity.seaman.SeamanCertificate;
+import com.marine.vessel_keeper.exception.SeamanCertificateException;
+import com.marine.vessel_keeper.exception.SeamanException;
 import com.marine.vessel_keeper.mapper.CertificateMapper;
 import com.marine.vessel_keeper.repository.CertificateRepository;
 import com.marine.vessel_keeper.repository.SeamanRepository;
@@ -47,7 +49,7 @@ class CertificateServiceTest {
     }
 
     @Test
-    void addCertificateToSeaman() {
+    void addCertificateToSeaman() throws SeamanException, SeamanCertificateException {
         CertificateRequestDto candidate = mock(CertificateRequestDto.class);
 
         when(seamanRepository.findById(anyLong())).thenReturn(Optional.of(seaman));
@@ -64,7 +66,7 @@ class CertificateServiceTest {
     }
 
     @Test
-    void deleteCertificate() {
+    void deleteCertificate() throws SeamanCertificateException {
         certificates.add(seamanCertificate);
         when(certificateRepository.findById(anyLong())).thenReturn(Optional.of(seamanCertificate));
         service.deleteCertificate(1L);

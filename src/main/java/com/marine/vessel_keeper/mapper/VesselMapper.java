@@ -2,7 +2,9 @@ package com.marine.vessel_keeper.mapper;
 
 import com.marine.vessel_keeper.dto.request.VesselRequestDto;
 import com.marine.vessel_keeper.dto.response.VesselResponseDto;
+import com.marine.vessel_keeper.entity.user.Role;
 import com.marine.vessel_keeper.entity.vessel.Vessel;
+import com.marine.vessel_keeper.entity.vessel.VesselType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -20,4 +22,7 @@ public interface VesselMapper {
     @Mapping(target = "crew", ignore = true)
     @Mapping(target = "voyage", ignore = true)
     Set<VesselResponseDto> vesselsToVesselResponseDtos(List<Vessel> vessels);
+    default VesselType mapType(String type) {
+        return VesselType.valueOf(type.toUpperCase());
+    }
 }

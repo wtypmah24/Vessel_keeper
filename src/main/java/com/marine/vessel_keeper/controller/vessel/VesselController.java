@@ -2,8 +2,11 @@ package com.marine.vessel_keeper.controller.vessel;
 
 import com.marine.vessel_keeper.dto.request.VesselRequestDto;
 import com.marine.vessel_keeper.dto.response.VesselResponseDto;
+import com.marine.vessel_keeper.exception.UserException;
 import com.marine.vessel_keeper.exception.VesselException;
+import com.marine.vessel_keeper.exception.VoyageException;
 import com.marine.vessel_keeper.service.vessel.VesselService;
+import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +23,7 @@ public class VesselController {
         this.vesselService = vesselService;
     }
     @PostMapping("/add")
-    public ResponseEntity<VesselResponseDto> addVessel(@RequestBody VesselRequestDto vesselRequestDto){
+    public ResponseEntity<VesselResponseDto> addVessel(@RequestBody VesselRequestDto vesselRequestDto) throws VesselException {
         return ResponseEntity.status(HttpStatus.CREATED).body(vesselService.addVessel(vesselRequestDto));
     }
 
@@ -35,7 +38,14 @@ public class VesselController {
     }
 
     @GetMapping("/find_applicable/{voyageId}")
-    public ResponseEntity<Set<VesselResponseDto>> findApplicable(@PathVariable long voyageId){
+    public ResponseEntity<Set<VesselResponseDto>> findApplicable(@PathVariable long voyageId) throws VoyageException {
         return ResponseEntity.status(HttpStatus.OK).body(vesselService.findApplicableVesselToVoyage(voyageId));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorMessage> handleException(VesselException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorMessage(exception.getMessage()));
     }
 }

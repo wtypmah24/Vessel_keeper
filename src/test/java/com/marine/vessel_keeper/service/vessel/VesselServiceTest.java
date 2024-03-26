@@ -49,7 +49,7 @@ class VesselServiceTest {
     }
 
     @Test
-    void addVessel() {
+    void addVessel() throws VesselException {
         service.addVessel(mock(VesselRequestDto.class));
         assertEquals(1, vessels.size());
     }
@@ -62,7 +62,7 @@ class VesselServiceTest {
     }
 
     @Test
-    void getAllVessels() {
+    void getAllVessels() throws VesselException {
         service.addVessel(mock(VesselRequestDto.class));
         //service.getAllVessels()
     }
