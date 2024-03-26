@@ -21,7 +21,7 @@ public class ThirdPartyController {
     }
 
     @GetMapping("/get_all/{key}")
-    public List<VesselApiDto> getAllVessels(@PathVariable String key){
+    public List<VesselApiDto> getAllVessels(@PathVariable("key") String key){
         return vesselApiClient.getAllVessels(secretKey);
     }
 }
