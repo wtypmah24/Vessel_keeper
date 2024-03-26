@@ -20,7 +20,7 @@ import java.util.Set;
 public class Vessel {
     @Id
     @Column(name = "imo_number", unique = true)
-    private long imoNumber;
+    private Long imoNumber;
     @Column(name = "name")
     private String name;
     @Column(name = "vessel_type")

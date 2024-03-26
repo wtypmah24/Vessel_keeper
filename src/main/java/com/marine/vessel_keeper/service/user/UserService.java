@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -24,6 +25,13 @@ public class UserService {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Transactional
+    public UserResponseDto registration(UserRequestDto userCandidate) throws UserException {
+        if (!Objects.equals(userCandidate.role(), Role.OWNER.name())) throw new UserException("Not allowed.");
+        if (!userRepository.findUserByRole(Role.OWNER).isEmpty())  throw new UserException("Owner already exists!");
+        return createUser(userCandidate);
     }
 
     @Transactional

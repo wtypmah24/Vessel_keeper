@@ -4,6 +4,8 @@ import com.marine.vessel_keeper.dto.request.CertificateRequestDto;
 import com.marine.vessel_keeper.dto.response.CertificateResponseDto;
 import com.marine.vessel_keeper.entity.seaman.Seaman;
 import com.marine.vessel_keeper.entity.seaman.SeamanCertificate;
+import com.marine.vessel_keeper.exception.SeamanCertificateException;
+import com.marine.vessel_keeper.exception.SeamanException;
 import com.marine.vessel_keeper.mapper.CertificateMapper;
 import com.marine.vessel_keeper.mapper.SeamanMapper;
 import com.marine.vessel_keeper.repository.CertificateRepository;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.cert.Certificate;
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,16 +33,18 @@ public class CertificateService {
     }
 
     @Transactional
-    public Set<CertificateResponseDto> addCertificateToSeaman(CertificateRequestDto candidate, long seamanId){
-        Seaman seaman = seamanRepository.findById(seamanId).orElseThrow();
+    public Set<CertificateResponseDto> addCertificateToSeaman(CertificateRequestDto candidate, long seamanId) throws SeamanException, SeamanCertificateException {
+        checkCertificateCandidate(candidate);
+        Seaman seaman = seamanRepository.findById(seamanId).orElseThrow(() -> new SeamanException("There is no seaman with provided id: " + seamanId));
         return seaman.addCertificate(addCertificateToDb(candidate))
                 .stream()
                 .map(certificateMapper::certificateToCertificateResponseDto)
                 .collect(Collectors.toSet());
     }
+
     @Transactional
-    public Set<CertificateResponseDto> deleteCertificate(long id){
-        SeamanCertificate certificate = certificateRepository.findById(id).orElseThrow();
+    public Set<CertificateResponseDto> deleteCertificate(long id) throws SeamanCertificateException {
+        SeamanCertificate certificate = certificateRepository.findById(id).orElseThrow(() -> new SeamanCertificateException("There is no certificate with id: " + id));
         Seaman seaman = certificate.getSeaman();
         removeCertificateFromDb(certificate);
         return seaman.removeCertificate(certificate)
@@ -53,7 +58,14 @@ public class CertificateService {
         return certificateRepository.save(certificateMapper.certificateRequestDtoToCertificate(candidate));
     }
 
-    private void removeCertificateFromDb(SeamanCertificate certificate){
+    private void removeCertificateFromDb(SeamanCertificate certificate) {
         certificateRepository.delete(certificate);
+    }
+
+    private void checkCertificateCandidate(CertificateRequestDto candidate) throws SeamanCertificateException {
+        if (candidate == null) throw new SeamanCertificateException("You didn't provide certificate to add.");
+        if (candidate.name().isBlank()) throw new SeamanCertificateException("You didn't provide certificate's name.");
+        if (candidate.expireDate().isBefore(LocalDate.now()))
+            throw new SeamanCertificateException("Certificate is expired!");
     }
 }

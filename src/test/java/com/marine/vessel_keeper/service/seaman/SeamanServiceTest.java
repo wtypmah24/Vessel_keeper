@@ -4,7 +4,9 @@ import com.marine.vessel_keeper.dto.request.SeamanRequestDto;
 import com.marine.vessel_keeper.entity.seaman.Seaman;
 import com.marine.vessel_keeper.entity.seaman.SeamanCertificate;
 import com.marine.vessel_keeper.entity.vessel.Vessel;
+import com.marine.vessel_keeper.exception.SeamanCertificateException;
 import com.marine.vessel_keeper.exception.SeamanException;
+import com.marine.vessel_keeper.exception.VesselException;
 import com.marine.vessel_keeper.mapper.SeamanMapper;
 import com.marine.vessel_keeper.repository.SeamanRepository;
 import com.marine.vessel_keeper.repository.VesselRepository;
@@ -78,7 +80,7 @@ class SeamanServiceTest {
     }
 
     @Test
-    void hireSeamanPositiveCase() throws SeamanException {
+    void hireSeamanPositiveCase() throws SeamanException, SeamanCertificateException {
         seaman.addCertificate(certificate);
         service.hireSeaman(1L, 1L);
         assertEquals(1, vessel.getCrew().size());
@@ -99,7 +101,7 @@ class SeamanServiceTest {
     }
 
     @Test
-    void signOffSeaman() throws SeamanException {
+    void signOffSeaman() throws SeamanException, SeamanCertificateException, VesselException {
         seaman.addCertificate(certificate);
         System.out.println(vessel.getCrew());
         service.hireSeaman(1L, 1L);

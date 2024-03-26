@@ -47,6 +47,7 @@ public class RecordOfServiceService {
     }
 
     private RecordOfServiceRequestDto createRequestDto(Seaman seaman, Vessel vessel, String comment) {
+        if (comment.isBlank()) comment = "Unknown";
         return new RecordOfServiceRequestDto(seaman, vessel, comment);
     }
 }

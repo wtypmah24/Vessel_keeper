@@ -20,7 +20,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                     SeamanCertificateException.class,
                     VoyageException.class})
     protected ResponseEntity<Object> handleIllegalState(RuntimeException ex, WebRequest request) {
-        return handleExceptionInternal(ex, "", new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+        return handleExceptionInternal(ex, "", new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
-
 }

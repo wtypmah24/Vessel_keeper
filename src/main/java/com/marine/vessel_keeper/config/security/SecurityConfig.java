@@ -12,12 +12,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static com.marine.vessel_keeper.entity.user.Role.CREW_MANAGER;
-import static com.marine.vessel_keeper.entity.user.Role.OWNER;
+import static com.marine.vessel_keeper.entity.user.Role.*;
 
 @Configuration
 @EnableWebSecurity
@@ -30,15 +28,43 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain formLoginFilterChain(HttpSecurity http, AuthenticationManager manager) throws Exception {
+    public SecurityFilterChain ownerFilterChain(HttpSecurity http, AuthenticationManager manager) throws Exception {
         return http
                 .csrf().disable()
                 .authorizeHttpRequests(authorize ->
-                        authorize.requestMatchers("/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/users/**").hasAuthority(OWNER.name())
+                        authorize
+                                .requestMatchers("/register").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/users/**").hasAuthority(OWNER.name())
                                 .requestMatchers(HttpMethod.DELETE, "/users/**").hasAuthority(OWNER.name())
                                 .requestMatchers(HttpMethod.GET, "/users/**").hasAuthority(OWNER.name())
+                                .anyRequest().authenticated())
+                .httpBasic(Customizer.withDefaults())
+                .authenticationManager(manager)
+                .build();
+    }
+    @Bean
+    public SecurityFilterChain crewFilterChain(HttpSecurity http, AuthenticationManager manager) throws Exception {
+        return http
+                .csrf().disable()
+                .authorizeHttpRequests(authorize ->
+                        authorize
                                 .requestMatchers(HttpMethod.GET, "/seamen/**").hasAuthority(CREW_MANAGER.name())
+                                .requestMatchers(HttpMethod.POST, "/seamen/**").hasAuthority(CREW_MANAGER.name())
+                                .anyRequest().authenticated())
+                .httpBasic(Customizer.withDefaults())
+                .authenticationManager(manager)
+                .build();
+    }
+    @Bean
+    public SecurityFilterChain operationalFilterChain(HttpSecurity http, AuthenticationManager manager) throws Exception {
+        return http
+                .csrf().disable()
+                .authorizeHttpRequests(authorize ->
+                        authorize
+                                .requestMatchers(HttpMethod.GET, "/voyage/**").hasAuthority(OPERATIONAL_MANAGER.name())
+                                .requestMatchers(HttpMethod.POST, "/voyage/**").hasAuthority(OPERATIONAL_MANAGER.name())
+                                .requestMatchers(HttpMethod.GET, "/vessel/**").hasAuthority(OPERATIONAL_MANAGER.name())
+                                .requestMatchers(HttpMethod.POST, "/vessel/**").hasAuthority(OPERATIONAL_MANAGER.name())
                                 .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .authenticationManager(manager)
@@ -56,8 +82,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-
-        //return new BCryptPasswordEncoder();
-        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance(); // пока без шифрования пароля в БД
+        return new BCryptPasswordEncoder();
+        //return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
     }
 }

@@ -2,8 +2,11 @@ package com.marine.vessel_keeper.controller.voyage;
 
 import com.marine.vessel_keeper.dto.request.VoyageRequestDto;
 import com.marine.vessel_keeper.dto.response.VoyageResponseDto;
+import com.marine.vessel_keeper.exception.UserException;
+import com.marine.vessel_keeper.exception.VoyageException;
 import com.marine.vessel_keeper.service.voyage.VoyageService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +26,20 @@ public class VoyageController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<VoyageResponseDto> addVoyage(@RequestBody VoyageRequestDto voyageRequestDto){
+    public ResponseEntity<VoyageResponseDto> addVoyage(@RequestBody VoyageRequestDto voyageRequestDto) throws VoyageException {
         return ResponseEntity.status(HttpStatus.CREATED).body(voyageService.addNewVoyage(voyageRequestDto));
     }
 
     @GetMapping("/get_all")
     public ResponseEntity<List<VoyageResponseDto>> getAll(){
         return ResponseEntity.status(HttpStatus.OK).body(voyageService.getAllVoyages());
+    }
+
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorMessage> handleException(VoyageException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorMessage(exception.getMessage()));
     }
 }
