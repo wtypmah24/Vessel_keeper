@@ -12,6 +12,7 @@ import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/seamen")
+@PreAuthorize("hasAnyAuthority('CREW_MANAGER', 'OWNER')")
 @Tag(name = "Seaman Controller", description = "Here you can manage your labor pool.")
 public class SeamanController {
     private final SeamanService seamanService;
@@ -28,6 +30,7 @@ public class SeamanController {
         this.seamanService = seamanService;
     }
 
+    @PreAuthorize("hasAnyAuthority('CREW_MANAGER', 'OWNER')")
     @GetMapping
     @Operation(
             summary = "Get all seamen"
@@ -36,6 +39,7 @@ public class SeamanController {
         return seamanService.getAllSeamen();
     }
 
+    @PreAuthorize("hasAnyAuthority('CREW_MANAGER', 'OWNER')")
     @PostMapping("/create")
     @Operation(
             summary = "Add seaman to labor pool",
@@ -45,6 +49,7 @@ public class SeamanController {
         return ResponseEntity.status(HttpStatus.CREATED).body(seamanService.addSeamanToLaborPool(seamanCandidate));
     }
 
+    @PreAuthorize("hasAnyAuthority('CREW_MANAGER', 'OWNER')")
     @DeleteMapping("/remove/{seamanId}")
     @Operation(
             summary = "Remove seaman from labor pool"
@@ -53,6 +58,7 @@ public class SeamanController {
         seamanService.removeSeamanFromLaborPool(seamanId);
     }
 
+    @PreAuthorize("hasAnyAuthority('CREW_MANAGER', 'OWNER')")
     @PostMapping("/hire/{seamanId}/{vesselId}")
     @Operation(
             summary = "Sign on a seaman on a vessel.",
@@ -63,6 +69,7 @@ public class SeamanController {
         return ResponseEntity.status(HttpStatus.OK).body(seamanService.hireSeaman(seamanId, vesselId));
     }
 
+    @PreAuthorize("hasAnyAuthority('CREW_MANAGER', 'OWNER')")
     @PostMapping("/signOff/")
     @Operation(
             summary = "Sign off a seaman from a vessel.",
@@ -74,6 +81,7 @@ public class SeamanController {
         return ResponseEntity.status(HttpStatus.OK).body(seamanService.signOffSeaman(seamanId, imoNumber, comment));
     }
 
+    @PreAuthorize("hasAnyAuthority('CREW_MANAGER', 'OWNER')")
     @PostMapping("/changeCrew/")
     @Operation(
             summary = "Perform crew change.",
@@ -86,6 +94,7 @@ public class SeamanController {
         return ResponseEntity.status(HttpStatus.OK).body(seamanService.changeCrew(signOnId, signOffId, vesselId, comment));
     }
 
+    @PreAuthorize("hasAnyAuthority('CREW_MANAGER', 'OWNER')")
     @PostMapping("/findApplicableSeaman/{imoNumber}")
     @Operation(
             summary = "Find applicable seaman to the vessel you choose.",
@@ -94,12 +103,14 @@ public class SeamanController {
     public ResponseEntity<Set<SeamanResponseDto>> findApplicableSeamen(@PathVariable long imoNumber) throws VesselException {
         return ResponseEntity.status(HttpStatus.OK).body(seamanService.findApplicableSeamenToVessel(imoNumber));
     }
+
     @ExceptionHandler
     public ResponseEntity<ErrorMessage> seamanHandleException(SeamanException seamanException) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessage(seamanException.getMessage()));
     }
+
     @ExceptionHandler
     public ResponseEntity<ErrorMessage> vesselHandleException(VesselException vesselException) {
         return ResponseEntity
